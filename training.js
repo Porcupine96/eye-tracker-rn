@@ -216,8 +216,8 @@ const Training: () => React$Node = () => {
 
   return (
     <>
-      <ImageBackground
-        source={require('./img/paper_fibers.png')}
+      <View
+        // source={require('./img/paper_fibers.png')}
         style={styles.main}>
         <>
           {state.mat ? (
@@ -260,7 +260,8 @@ const Training: () => React$Node = () => {
           </View>
           {buttons}
         </>
-      </ImageBackground>
+      </View>
+      {/* </ImageBackground> */}
     </>
   );
 };
