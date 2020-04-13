@@ -72,30 +72,34 @@ const Training: () => React$Node = () => {
   }, []);
 
   const onFacesDetected = e => {
+    var rawPayload = undefined;
+
     if (Platform.OS === 'ios') {
-      if (e.nativeEvent.payload) {
-        const payload = JSON.parse(e.nativeEvent.payload);
+      rawPayload = e.nativeEvent.payload;
+    } else {
+      rawPayload = e.payload;
+    }
 
-        if (payload.faces.length == 1) {
-          const face = payload.faces[0];
-          const {firstEye, secondEye} = face;
+    if (rawPayload) {
+      const payload = JSON.parse(rawPayload);
 
-          if (firstEye && secondEye) {
-            setState({
-              ...state,
-              eyes: {firstEye, secondEye},
-              eyesDetected: true,
-              lastDetected: Date.now(),
-            });
-          } else {
-            setState({...state, eyes: noEyes, eyesDetected: false});
-          }
+      if (payload.faces.length == 1) {
+        const face = payload.faces[0];
+        const {firstEye, secondEye} = face;
+
+        if (firstEye && secondEye) {
+          setState({
+            ...state,
+            eyes: {firstEye, secondEye},
+            eyesDetected: true,
+            lastDetected: Date.now(),
+          });
         } else {
           setState({...state, eyes: noEyes, eyesDetected: false});
         }
+      } else {
+        setState({...state, eyes: noEyes, eyesDetected: false});
       }
-    } else {
-      console.error('Android currently unsupported!');
     }
   };
 
