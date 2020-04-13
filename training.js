@@ -95,9 +95,11 @@ const Training: () => React$Node = () => {
             lastDetected: Date.now(),
           });
         } else {
+          console.log('a');
           setState({...state, eyes: noEyes, eyesDetected: false});
         }
       } else {
+        console.log('b');
         setState({...state, eyes: noEyes, eyesDetected: false});
       }
     }
