@@ -286,10 +286,10 @@ const styles = StyleSheet.create({
   cameraPreview: {
     alignItems: 'center',
     backgroundColor: 'transparent',
-    height: '20%',
-    width: '20%',
-    top: 80,
+    top: 0,
+    left: 200,
     right: 8,
+    bottom: 150,
     position: 'absolute',
   },
   roundButton: {
