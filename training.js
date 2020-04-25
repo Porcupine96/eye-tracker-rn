@@ -24,6 +24,8 @@ import {
 
 import {uploadImage} from './upload.js';
 
+import RNFS from 'react-native-fs';
+
 const noEyes = {
   firstEye: undefined,
   secondEye: undefined,
@@ -32,6 +34,8 @@ const noEyes = {
 const emptyState = {
   cvCamera: undefined,
   eyes: noEyes,
+  firstEyeData: undefined,
+  secondEyeData: undefined,
   eyesDetected: false,
   lastDetected: new Date(),
   buttonClicks: {},
@@ -66,12 +70,12 @@ const Training: () => React$Node = () => {
   useEffect(() => {
     setup();
     if (!state.timerSet) {
-      // setInterval(resetEyesDetected, 2000, []);
+      setInterval(resetEyesDetected, 2000, []);
       setState({...state, timerSet: true});
     }
   }, []);
 
-  const onFacesDetected = e => {
+  function onFacesDetected(e) {
     var rawPayload = undefined;
 
     if (Platform.OS === 'ios') {
@@ -83,27 +87,28 @@ const Training: () => React$Node = () => {
     if (rawPayload) {
       const payload = JSON.parse(rawPayload);
 
-      if (payload.faces.length == 1) {
+      if (payload.faces.length === 1) {
         const face = payload.faces[0];
         const {firstEye, secondEye} = face;
+        const {firstEyeData, secondEyeData} = face;
 
         if (firstEye && secondEye) {
           setState({
             ...state,
             eyes: {firstEye, secondEye},
+            firstEyeData: firstEyeData,
+            secondEyeData: secondEyeData,
             eyesDetected: true,
             lastDetected: Date.now(),
           });
-        } else {
-          console.log('a');
+        } else if (state.eyesDetected) {
           setState({...state, eyes: noEyes, eyesDetected: false});
         }
-      } else {
-        console.log('b');
+      } else if (state.eyesDetected) {
         setState({...state, eyes: noEyes, eyesDetected: false});
       }
     }
-  };
+  }
 
   async function takePicture(position) {
     const {uri, width, height} = await state.cvCamera.current.takePicture(
@@ -120,7 +125,29 @@ const Training: () => React$Node = () => {
     const newCount = currentCount + 1;
     const buttonClicks = {...state.buttonClicks, [position]: newCount};
 
-    await takePicture(position);
+    // TODO: this could be awaited
+    let timestamp = new Date().getTime();
+
+    let firstPath =
+      RNFS.DocumentDirectoryPath + `/v5_${position}_first_${timestamp}.json`;
+    let secondPath =
+      RNFS.DocumentDirectoryPath + `/v5_${position}_second_${timestamp}.json`;
+
+    RNFS.writeFile(firstPath, JSON.stringify(state.firstEyeData), 'utf8')
+      .then(s => {
+        console.log(`Written to: ${firstPath}`);
+      })
+      .catch(err => {
+        console.error(err);
+      });
+
+    RNFS.writeFile(secondPath, JSON.stringify(state.secondEyeData), 'utf8')
+      .then(s => {
+        console.log(`Written to: ${secondPath}`);
+      })
+      .catch(err => {
+        console.error(err);
+      });
 
     setState({...state, buttonClicks: buttonClicks});
   };
@@ -203,28 +230,10 @@ const Training: () => React$Node = () => {
     }
   };
 
-  async function onPayload(payload) {
-    // console.log('onPayload');
-    // console.log(payload);
-    console.log('hello');
-    console.log(state.mat.data);
-
-    // console.log(await state.mat.get());
-    // console.log(state.cvCamera);
-  }
-
-  const posterScalar = new CvScalar(0, 0, 0, 255);
-
-  if (state.mat) {
-    console.log('mat');
-    console.log(state.mat);
-  }
-
   return (
     <>
-      <View
-        // source={require('./img/paper_fibers.png')}
-        style={styles.main}>
+      {/* <ImageBackground source={require('./img/paper.png')} style={styles.main}> */}
+      <View style={styles.main}>
         <>
           {state.mat ? (
             <CvInvoke
@@ -239,12 +248,10 @@ const Training: () => React$Node = () => {
                 ref={state.cvCamera}
                 style={styles.cameraPreview}
                 facing="front"
-                faceClassifier="haarcascade_frontalface_alt2"
+                faceClassifier="haarcascade_frontalface_alt"
                 eyesClassifier="haarcascade_eye_tree_eyeglasses"
                 onFacesDetected={onFacesDetected}
-                onPayload={onPayload}
                 useStorage={true}
-                overlayInterval={2000}
               />
             </CvInvoke>
           ) : (
@@ -266,8 +273,8 @@ const Training: () => React$Node = () => {
           </View>
           {buttons}
         </>
+        {/* </ImageBackground> */}
       </View>
-      {/* </ImageBackground> */}
     </>
   );
 };
