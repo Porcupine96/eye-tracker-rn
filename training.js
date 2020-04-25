@@ -76,6 +76,7 @@ const Training: () => React$Node = () => {
   }, []);
 
   function onFacesDetected(e) {
+    console.log('Faces detected');
     var rawPayload = undefined;
 
     if (Platform.OS === 'ios') {
@@ -91,6 +92,9 @@ const Training: () => React$Node = () => {
         const face = payload.faces[0];
         const {firstEye, secondEye} = face;
         const {firstEyeData, secondEyeData} = face;
+
+        console.log(firstEyeData);
+        console.log(secondEyeData);
 
         if (firstEye && secondEye) {
           setState({
@@ -297,9 +301,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'transparent',
     top: 0,
-    left: 200,
+    left: '50%',
     right: 8,
-    bottom: 150,
+    bottom: '50%',
     position: 'absolute',
   },
   roundButton: {
