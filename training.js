@@ -73,7 +73,7 @@ const Training: () => React$Node = () => {
       setInterval(resetEyesDetected, 2000, []);
       setState({...state, timerSet: true});
     }
-  }, []);
+  }, [state]);
 
   function onFacesDetected(e) {
     var rawPayload = undefined;
@@ -129,9 +129,9 @@ const Training: () => React$Node = () => {
     let timestamp = new Date().getTime();
 
     let firstPath =
-      RNFS.DocumentDirectoryPath + `/v5_${position}_first_${timestamp}.json`;
+      RNFS.DocumentDirectoryPath + `/v6_${position}_first_${timestamp}.json`;
     let secondPath =
-      RNFS.DocumentDirectoryPath + `/v5_${position}_second_${timestamp}.json`;
+      RNFS.DocumentDirectoryPath + `/v6_${position}_second_${timestamp}.json`;
 
     RNFS.writeFile(firstPath, JSON.stringify(state.firstEyeData), 'utf8')
       .then(s => {
