@@ -60,6 +60,7 @@
 		88BFFD59D981F91C308EC683 /* Pods-EyeTracker-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EyeTracker-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-EyeTracker-tvOS/Pods-EyeTracker-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
 		AABAB4595748E400288D6F1C /* Pods-EyeTracker.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EyeTracker.debug.xcconfig"; path = "Target Support Files/Pods-EyeTracker/Pods-EyeTracker.debug.xcconfig"; sourceTree = "<group>"; };
 		AC30AF9BE91472DCCC191684 /* libPods-EyeTracker.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-EyeTracker.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BA8E8A832458AD4B004585E5 /* EyeTracker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = EyeTracker.entitlements; path = EyeTracker/EyeTracker.entitlements; sourceTree = "<group>"; };
 		D3EA03A39533B8C0E094141A /* Pods-EyeTracker-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EyeTracker-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-EyeTracker-tvOSTests/Pods-EyeTracker-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		D7738143386EC3BE7010FDF9 /* libPods-EyeTracker-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-EyeTracker-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E99DFA3F523DC288FA34180B /* Pods-EyeTrackerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EyeTrackerTests.debug.xcconfig"; path = "Target Support Files/Pods-EyeTrackerTests/Pods-EyeTrackerTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -125,6 +126,7 @@
 		13B07FAE1A68108700A75B9A /* EyeTracker */ = {
 			isa = PBXGroup;
 			children = (
+				BA8E8A832458AD4B004585E5 /* EyeTracker.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -652,6 +654,7 @@
 			baseConfigurationReference = AABAB4595748E400288D6F1C /* Pods-EyeTracker.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = EyeTracker/EyeTracker.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = Z748U3FKUH;
@@ -673,6 +676,7 @@
 			baseConfigurationReference = 1436C9CB2F9C67973A59C1A8 /* Pods-EyeTracker.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = EyeTracker/EyeTracker.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Z748U3FKUH;
 				INFOPLIST_FILE = EyeTracker/Info.plist;

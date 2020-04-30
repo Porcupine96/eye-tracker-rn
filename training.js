@@ -129,9 +129,11 @@ const Training: () => React$Node = () => {
     let timestamp = new Date().getTime();
 
     let firstPath =
-      RNFS.DocumentDirectoryPath + `/v6_${position}_first_${timestamp}.json`;
+      RNFS.DocumentDirectoryPath +
+      `/lukasz_${position}_first_${timestamp}.json`;
     let secondPath =
-      RNFS.DocumentDirectoryPath + `/v6_${position}_second_${timestamp}.json`;
+      RNFS.DocumentDirectoryPath +
+      `/lukasz_${position}_second_${timestamp}.json`;
 
     RNFS.writeFile(firstPath, JSON.stringify(state.firstEyeData), 'utf8')
       .then(s => {
@@ -164,6 +166,9 @@ const Training: () => React$Node = () => {
       const left = 10;
       const midX = width / 2 - circleSize / 2;
       const right = width - circleSize - 10;
+
+      console.log(top, midY, bottom);
+      console.log(left, midX, right);
 
       switch (position) {
         case 'top-left':
@@ -236,24 +241,15 @@ const Training: () => React$Node = () => {
       <View style={styles.main}>
         <>
           {state.mat ? (
-            <CvInvoke
-              func="cvtColor"
-              params={{
-                p1: 'rgba',
-                p2: state.mat,
-                p3: ColorConv.COLOR_RGB2RGBA,
-              }}
-              callback="onPayload">
-              <CvCamera
-                ref={state.cvCamera}
-                style={styles.cameraPreview}
-                facing="front"
-                faceClassifier="haarcascade_frontalface_alt"
-                eyesClassifier="haarcascade_eye_tree_eyeglasses"
-                onFacesDetected={onFacesDetected}
-                useStorage={true}
-              />
-            </CvInvoke>
+            <CvCamera
+              ref={state.cvCamera}
+              style={styles.cameraPreview}
+              facing="front"
+              faceClassifier="haarcascade_frontalface_alt"
+              eyesClassifier="haarcascade_eye_tree_eyeglasses"
+              onFacesDetected={onFacesDetected}
+              useStorage={true}
+            />
           ) : (
             <View />
           )}
