@@ -178,9 +178,16 @@ android {
     }
 }
 
+apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
+
 dependencies {
-    implementation project(':react-native-opencv3')
-    implementation project(':react-native-fs')
+    compile "com.android.support:support-v4:21.0.+"
+    //addUnimodulesDependencies()
+    addUnimodulesDependencies([
+        //configuration: "compile",
+        exclude: ['expo-permissions']])
+
+
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.facebook.react:react-native:+"  // From node_modules
 

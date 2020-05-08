@@ -1,0 +1,12 @@
+#+TITLE: Readme
+
+
+* Android Fixes
+  - fix expo-camera using androidx
+     #+BEGIN_SRC bash :dir node_modules :output
+     rg androidx.core.util --files-with-matches | xargs -I {} sd -s 'androidx.core.util' 'android.support.v4.util' {}
+     # pwd
+     # rg androidx.core.util --files-with-matches
+     #+END_SRC
+
+     #+RESULTS:

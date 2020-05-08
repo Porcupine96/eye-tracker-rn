@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ImageBackground,
   Dimensions,
+  DeviceEventEmitter,
 } from 'react-native';
 
 import {
@@ -71,12 +72,12 @@ const Training: () => React$Node = () => {
     setup();
     if (!state.timerSet) {
       setInterval(resetEyesDetected, 2000, []);
+      DeviceEventEmitter.addListener('onFacesDetected', onFacesDetected);
       setState({...state, timerSet: true});
     }
   }, [state]);
 
   function onFacesDetected(e) {
-    console.log('Faces detected');
     var rawPayload = undefined;
 
     if (Platform.OS === 'ios') {
@@ -92,9 +93,10 @@ const Training: () => React$Node = () => {
         const face = payload.faces[0];
         const {firstEye, secondEye} = face;
         const {firstEyeData, secondEyeData} = face;
+        if (firstEyeData) {
+          console.log(firstEyeData);
+        }
 
-        console.log(firstEyeData);
-        console.log(secondEyeData);
 
         if (firstEye && secondEye) {
           setState({
@@ -239,6 +241,7 @@ const Training: () => React$Node = () => {
     }
   };
 
+  console.log('Render');
   return (
     <>
       {/* <ImageBackground source={require('./img/paper.png')} style={styles.main}> */}
@@ -255,6 +258,7 @@ const Training: () => React$Node = () => {
               useStorage={true}
             />
           ) : (
+            /* </CvInvoke> */
             <View />
           )}
           <View style={styles.eyeTextWrapper}>
