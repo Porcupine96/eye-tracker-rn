@@ -181,12 +181,8 @@ android {
 apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
 
 dependencies {
-    implementation "com.android.support:support-v4:+"
-    //addUnimodulesDependencies()
-    addUnimodulesDependencies([
-        //configuration: "compile",
-        exclude: ['expo-permissions']])
-
+    implementation 'androidx.appcompat:appcompat:1.0.1'
+    addUnimodulesDependencies()
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.facebook.react:react-native:+"  // From node_modules

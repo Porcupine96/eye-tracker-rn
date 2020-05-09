@@ -5,8 +5,8 @@ import Track from './track.js';
 import SanityCheck from './sanitycheck.js';
 
 const App: () => React$Node = () => {
-  // return <Training />;
-  return <Track />;
+  return <Training />;
+  // return <Track />;
 };
 
 export default App;
