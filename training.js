@@ -9,6 +9,7 @@ import {
   ImageBackground,
   Dimensions,
   DeviceEventEmitter,
+  Platform,
 } from 'react-native';
 
 import {
@@ -73,6 +74,7 @@ const Training: () => React$Node = () => {
     if (!state.timerSet) {
       setInterval(resetEyesDetected, 2000, []);
       DeviceEventEmitter.addListener('onFacesDetected', onFacesDetected);
+      console.log('Device emitter added.');
       setState({...state, timerSet: true});
     }
   }, [state]);
@@ -96,7 +98,6 @@ const Training: () => React$Node = () => {
         if (firstEyeData) {
           console.log(firstEyeData);
         }
-
 
         if (firstEye && secondEye) {
           setState({
