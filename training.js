@@ -105,9 +105,6 @@ const Training: () => React$Node = () => {
         const face = payload.faces[0];
         const {firstEye, secondEye} = face;
         const {firstEyeData, secondEyeData} = face;
-        // if (firstEye) {
-        //   // console.log(firstEyeData);
-        // }
 
         if (firstEye && secondEye) {
           setState({
@@ -119,12 +116,12 @@ const Training: () => React$Node = () => {
             lastDetected: Date.now(),
           });
         } else if (state.eyesDetected) {
-          if (!(state.eyes === noEyes && state.eyesDetected === false)) {
+          if (!(state.eyes === noEyes)) {
             setState({...state, eyes: noEyes, eyesDetected: false});
           }
         }
       } else if (state.eyesDetected) {
-        if (!(state.eyes === noEyes && state.eyesDetected === false)) {
+        if (!(state.eyes === noEyes)) {
           setState({...state, eyes: noEyes, eyesDetected: false});
         }
       }
@@ -225,19 +222,11 @@ const Training: () => React$Node = () => {
 
     const clicks = state.buttonClicks[position] || 0;
 
-    function dupa() {
-      if (eyesDetected) {
-        onButtonPress(position);
-      } else {
-        console.log('Pressed a red button 🙃');
-      }
-    }
-
     return (
       <TouchableOpacity
         style={style}
         key={position}
-        onPress={dupa}
+        onPress={onButtonPress(position)}
         disabled={false}>
         <Text style={{fontFamily: 'Courier New'}}>{clicks}</Text>
       </TouchableOpacity>
