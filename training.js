@@ -9,7 +9,6 @@ import {
   ImageBackground,
   Dimensions,
   DeviceEventEmitter,
-  NativeAppEventEmitter,
   Platform,
 } from 'react-native';
 
@@ -44,11 +43,10 @@ const emptyState = {
   buttonClicks: {},
   timerSet: false,
   mat: undefined,
-  listenerAdded: false,
   toggle: false,
 };
 
-var listenerAdded = false;
+var listenerAdded = false; // <3 Global variable
 
 const Training: () => React$Node = () => {
   console.log('Rendering training');
@@ -74,16 +72,18 @@ const Training: () => React$Node = () => {
       setState({...state, cvCamera: React.createRef(), mat: mat});
     } else if (!listenerAdded) {
       console.log('Added Event Emitter');
-      NativeAppEventEmitter.addListener('onFacesDetected', onFacesDetected);
-      setState({...state, listenerAdded: true});
+      DeviceEventEmitter.addListener('onFacesDetected', onFacesDetected);
       listenerAdded = true;
     }
   }
+
+  function allowDetection() {}
 
   useEffect(() => {
     setup();
     if (!state.timerSet) {
       setInterval(resetEyesDetected, 2000, []);
+      allowDetection(allowDetection, 200, []);
       setState({...state, timerSet: true});
     }
   }, [state]);
@@ -229,8 +229,7 @@ const Training: () => React$Node = () => {
       if (eyesDetected) {
         onButtonPress(position);
       } else {
-        console.log('ala');
-        setState({...state, toggle: !state.toggle});
+        console.log('Pressed a red button 🙃');
       }
     }
 
