@@ -9,6 +9,7 @@ import {
   ImageBackground,
   Dimensions,
   DeviceEventEmitter,
+  NativeAppEventEmitter,
   Platform,
 } from 'react-native';
 
@@ -43,9 +44,14 @@ const emptyState = {
   buttonClicks: {},
   timerSet: false,
   mat: undefined,
+  listenerAdded: false,
+  toggle: false,
 };
 
+var listenerAdded = false;
+
 const Training: () => React$Node = () => {
+  console.log('Rendering training');
   const {width, height} = Dimensions.get('window');
 
   const [state, setState] = useState(emptyState);
@@ -66,6 +72,11 @@ const Training: () => React$Node = () => {
     if (!state.cvCamera) {
       const mat = await new Mat().init();
       setState({...state, cvCamera: React.createRef(), mat: mat});
+    } else if (!listenerAdded) {
+      console.log('Added Event Emitter');
+      NativeAppEventEmitter.addListener('onFacesDetected', onFacesDetected);
+      setState({...state, listenerAdded: true});
+      listenerAdded = true;
     }
   }
 
@@ -73,13 +84,12 @@ const Training: () => React$Node = () => {
     setup();
     if (!state.timerSet) {
       setInterval(resetEyesDetected, 2000, []);
-      DeviceEventEmitter.addListener('onFacesDetected', onFacesDetected);
-      console.log('Device emitter added.');
       setState({...state, timerSet: true});
     }
   }, [state]);
 
   function onFacesDetected(e) {
+    // console.log('In onFacesDetected');
     var rawPayload = undefined;
 
     if (Platform.OS === 'ios') {
@@ -95,9 +105,9 @@ const Training: () => React$Node = () => {
         const face = payload.faces[0];
         const {firstEye, secondEye} = face;
         const {firstEyeData, secondEyeData} = face;
-        if (firstEyeData) {
-          console.log(firstEyeData);
-        }
+        // if (firstEye) {
+        //   // console.log(firstEyeData);
+        // }
 
         if (firstEye && secondEye) {
           setState({
@@ -109,10 +119,14 @@ const Training: () => React$Node = () => {
             lastDetected: Date.now(),
           });
         } else if (state.eyesDetected) {
-          setState({...state, eyes: noEyes, eyesDetected: false});
+          if (!(state.eyes === noEyes && state.eyesDetected === false)) {
+            setState({...state, eyes: noEyes, eyesDetected: false});
+          }
         }
       } else if (state.eyesDetected) {
-        setState({...state, eyes: noEyes, eyesDetected: false});
+        if (!(state.eyes === noEyes && state.eyesDetected === false)) {
+          setState({...state, eyes: noEyes, eyesDetected: false});
+        }
       }
     }
   }
@@ -128,6 +142,7 @@ const Training: () => React$Node = () => {
   }
 
   const onButtonPress = position => async () => {
+    console.log('On Button press');
     const currentCount = state.buttonClicks[position] || 0;
     const newCount = currentCount + 1;
     const buttonClicks = {...state.buttonClicks, [position]: newCount};
@@ -174,8 +189,8 @@ const Training: () => React$Node = () => {
       const midX = width / 2 - circleSize / 2;
       const right = width - circleSize - 10;
 
-      console.log(top, midY, bottom);
-      console.log(left, midX, right);
+      // console.log(top, midY, bottom);
+      // console.log(left, midX, right);
 
       switch (position) {
         case 'top-left':
@@ -210,12 +225,21 @@ const Training: () => React$Node = () => {
 
     const clicks = state.buttonClicks[position] || 0;
 
+    function dupa() {
+      if (eyesDetected) {
+        onButtonPress(position);
+      } else {
+        console.log('ala');
+        setState({...state, toggle: !state.toggle});
+      }
+    }
+
     return (
       <TouchableOpacity
         style={style}
         key={position}
-        onPress={onButtonPress(position)}
-        disabled={!eyesDetected}>
+        onPress={dupa}
+        disabled={false}>
         <Text style={{fontFamily: 'Courier New'}}>{clicks}</Text>
       </TouchableOpacity>
     );
@@ -242,10 +266,9 @@ const Training: () => React$Node = () => {
     }
   };
 
-  console.log('Render');
   return (
     <>
-      {/* <ImageBackground source={require('./img/paper.png')} style={styles.main}> */}
+      {/* <ImageBackground source={require('./img/paper.png')} style={styles.main} /> */}
       <View style={styles.main}>
         <>
           {state.mat ? (
@@ -253,13 +276,12 @@ const Training: () => React$Node = () => {
               ref={state.cvCamera}
               style={styles.cameraPreview}
               facing="front"
-              faceClassifier="haarcascade_frontalface_alt"
+              faceClassifier="haarcascade_frontalface_alt2"
               eyesClassifier="haarcascade_eye_tree_eyeglasses"
-              onFacesDetected={onFacesDetected}
+              /* onFacesDetected={onFacesDetected} */
               useStorage={true}
             />
           ) : (
-            /* </CvInvoke> */
             <View />
           )}
           <View style={styles.eyeTextWrapper}>

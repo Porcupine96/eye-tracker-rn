@@ -75,7 +75,7 @@ const SanityCheck: () => React$Node = () => {
       /* eyesClassifier="haarcascade_eye_tree_eyeglasses" */
       /* faceClassifier="haarcascade_frontalface_alt" */
       /* onFacesDetected={onFacesDetected} */
-      faceClassifier="haarcascade_frontalface_alt2"
+      faceClassifier="haarcascade_frontalface_alt"
       landmarksModel="lbfmodel"
       onFacesDetected={onFacesDetected}
       style={styles.preview}

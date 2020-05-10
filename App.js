@@ -5,6 +5,7 @@ import Track from './track.js';
 import SanityCheck from './sanitycheck.js';
 
 const App: () => React$Node = () => {
+  // return <SanityCheck />;
   return <Training />;
   // return <Track />;
 };
