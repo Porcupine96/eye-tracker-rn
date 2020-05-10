@@ -5708,10 +5708,9 @@ react-native-fs@^2.16.6:
     base-64 "^0.1.0"
     utf8 "^3.0.0"
 
-react-native-opencv3@^1.0.7:
+"react-native-opencv3@https://github.com/Porcupine96/react-native-opencv3.git#fixing-conflict":
   version "1.0.7"
-  resolved "https://registry.yarnpkg.com/react-native-opencv3/-/react-native-opencv3-1.0.7.tgz#3c790d5bd365518058bc414ee5a49207543df123"
-  integrity sha512-y/PIrA9q7Zgv69F8RwjfH3X8/fKzlkLb/IStFOlyrgNWBexV5gwA2VNO+P63tD7x1N/WK5ZjGBVDcPf40MlFKw==
+  resolved "https://github.com/Porcupine96/react-native-opencv3.git#fe4982b6789df8bd9f86ce902c657e4d4f51237d"
 
 react-native-unimodules@^0.9.0:
   version "0.9.0"
