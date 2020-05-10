@@ -3,7 +3,7 @@
 buildscript {
     ext {
         buildToolsVersion = "28.0.3"
-        minSdkVersion = 16
+        minSdkVersion = 21
         compileSdkVersion = 28
         targetSdkVersion = 28
     }
@@ -26,6 +26,9 @@ allprojects {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
             url("$rootDir/../node_modules/react-native/android")
         }
+        maven{
+            url("$rootDir/../node_modules/expo-camera/android/maven")
+        }
         maven {
             // Android JSC is installed from npm
             url("$rootDir/../node_modules/jsc-android/dist")
@@ -33,6 +36,6 @@ allprojects {
 
         google()
         jcenter()
-        maven { url 'https://jitpack.io' }
+        //maven { url 'https://jitpack.io' }
     }
 }

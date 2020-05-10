@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   ImageBackground,
   Dimensions,
+  DeviceEventEmitter,
+  Platform,
 } from 'react-native';
 
 import {
@@ -41,9 +43,13 @@ const emptyState = {
   buttonClicks: {},
   timerSet: false,
   mat: undefined,
+  toggle: false,
 };
 
+var listenerAdded = false; // <3 Global variable
+
 const Training: () => React$Node = () => {
+  console.log('Rendering training');
   const {width, height} = Dimensions.get('window');
 
   const [state, setState] = useState(emptyState);
@@ -64,18 +70,26 @@ const Training: () => React$Node = () => {
     if (!state.cvCamera) {
       const mat = await new Mat().init();
       setState({...state, cvCamera: React.createRef(), mat: mat});
+    } else if (!listenerAdded) {
+      console.log('Added Event Emitter');
+      DeviceEventEmitter.addListener('onFacesDetected', onFacesDetected);
+      listenerAdded = true;
     }
   }
+
+  function allowDetection() {}
 
   useEffect(() => {
     setup();
     if (!state.timerSet) {
       setInterval(resetEyesDetected, 2000, []);
+      allowDetection(allowDetection, 200, []);
       setState({...state, timerSet: true});
     }
   }, [state]);
 
   function onFacesDetected(e) {
+    // console.log('In onFacesDetected');
     var rawPayload = undefined;
 
     if (Platform.OS === 'ios') {
@@ -91,6 +105,9 @@ const Training: () => React$Node = () => {
         const face = payload.faces[0];
         const {firstEye, secondEye} = face;
         const {firstEyeData, secondEyeData} = face;
+        // if (firstEye) {
+        //   // console.log(firstEyeData);
+        // }
 
         if (firstEye && secondEye) {
           setState({
@@ -102,10 +119,14 @@ const Training: () => React$Node = () => {
             lastDetected: Date.now(),
           });
         } else if (state.eyesDetected) {
-          setState({...state, eyes: noEyes, eyesDetected: false});
+          if (!(state.eyes === noEyes && state.eyesDetected === false)) {
+            setState({...state, eyes: noEyes, eyesDetected: false});
+          }
         }
       } else if (state.eyesDetected) {
-        setState({...state, eyes: noEyes, eyesDetected: false});
+        if (!(state.eyes === noEyes && state.eyesDetected === false)) {
+          setState({...state, eyes: noEyes, eyesDetected: false});
+        }
       }
     }
   }
@@ -121,6 +142,7 @@ const Training: () => React$Node = () => {
   }
 
   const onButtonPress = position => async () => {
+    console.log('On Button press');
     const currentCount = state.buttonClicks[position] || 0;
     const newCount = currentCount + 1;
     const buttonClicks = {...state.buttonClicks, [position]: newCount};
@@ -167,8 +189,8 @@ const Training: () => React$Node = () => {
       const midX = width / 2 - circleSize / 2;
       const right = width - circleSize - 10;
 
-      console.log(top, midY, bottom);
-      console.log(left, midX, right);
+      // console.log(top, midY, bottom);
+      // console.log(left, midX, right);
 
       switch (position) {
         case 'top-left':
@@ -203,12 +225,20 @@ const Training: () => React$Node = () => {
 
     const clicks = state.buttonClicks[position] || 0;
 
+    function dupa() {
+      if (eyesDetected) {
+        onButtonPress(position);
+      } else {
+        console.log('Pressed a red button 🙃');
+      }
+    }
+
     return (
       <TouchableOpacity
         style={style}
         key={position}
-        onPress={onButtonPress(position)}
-        disabled={!eyesDetected}>
+        onPress={dupa}
+        disabled={false}>
         <Text style={{fontFamily: 'Courier New'}}>{clicks}</Text>
       </TouchableOpacity>
     );
@@ -237,7 +267,7 @@ const Training: () => React$Node = () => {
 
   return (
     <>
-      {/* <ImageBackground source={require('./img/paper.png')} style={styles.main}> */}
+      {/* <ImageBackground source={require('./img/paper.png')} style={styles.main} /> */}
       <View style={styles.main}>
         <>
           {state.mat ? (
@@ -245,7 +275,7 @@ const Training: () => React$Node = () => {
               ref={state.cvCamera}
               style={styles.cameraPreview}
               facing="front"
-              faceClassifier="haarcascade_frontalface_alt"
+              faceClassifier="haarcascade_frontalface_alt2"
               eyesClassifier="haarcascade_eye_tree_eyeglasses"
               onFacesDetected={onFacesDetected}
               useStorage={true}
@@ -292,10 +322,10 @@ const styles = StyleSheet.create({
   cameraPreview: {
     alignItems: 'center',
     backgroundColor: 'transparent',
-    height: '20%',
-    width: '20%',
-    top: 80,
+    top: 0,
+    left: '50%',
     right: 8,
+    bottom: '50%',
     position: 'absolute',
   },
   roundButton: {
