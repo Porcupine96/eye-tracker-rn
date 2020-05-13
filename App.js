@@ -6,8 +6,8 @@ import SanityCheck from './sanitycheck.js';
 
 const App: () => React$Node = () => {
   // return <SanityCheck />;
-  return <Training />;
-  // return <Track />;
+  // return <Training />;
+  return <Track />;
 };
 
 export default App;

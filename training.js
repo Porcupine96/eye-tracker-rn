@@ -266,7 +266,7 @@ const Training: () => React$Node = () => {
               facing="front"
               faceClassifier="haarcascade_frontalface_alt2"
               eyesClassifier="haarcascade_eye_tree_eyeglasses"
-              onFacesDetected={onFacesDetected}
+              onFacesDetectedCv={onFacesDetected}
               useStorage={true}
             />
           ) : (
