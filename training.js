@@ -186,9 +186,6 @@ const Training: () => React$Node = () => {
       const midX = width / 2 - circleSize / 2;
       const right = width - circleSize - 10;
 
-      // console.log(top, midY, bottom);
-      // console.log(left, midX, right);
-
       switch (position) {
         case 'top-left':
           return [top, left];

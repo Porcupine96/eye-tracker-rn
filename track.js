@@ -11,29 +11,42 @@ import {
 
 import {CvCamera} from 'react-native-opencv3';
 
-const emptyState = {
-  cvCamera: undefined,
-  eyesDetected: false,
-  lastDetected: new Date(),
-  model: undefined,
-};
+const POINTER_SIZE = 40;
+
+function emptyState(width, height) {
+  return {
+    cvCamera: undefined,
+    eyesDetected: false,
+    lastDetected: new Date(),
+    model: undefined,
+    dot: [(width - POINTER_SIZE) / 2, (height - POINTER_SIZE) / 2],
+  };
+}
 
 const Track: () => React$Node = () => {
   const {width, height} = Dimensions.get('window');
 
-  const [state, setState] = useState(emptyState);
+  const [state, setState] = useState(emptyState(width, height));
 
-  async function createModel() {
-    const modelJson = require('./model/model.json');
-    const modelWeights = require('./model/weights.bin');
+  async function setup() {
+    if (!state.model) {
+      const modelJson = require('./model/model.json');
+      const modelWeights = require('./model/weights.bin');
 
-    await tf.ready();
+      await tf.ready();
 
-    const model = await tf.loadLayersModel(
-      bundleResourceIO(modelJson, modelWeights),
-    );
+      const model = await tf.loadLayersModel(
+        bundleResourceIO(modelJson, modelWeights),
+      );
 
-    return model;
+      if (state.cvCamera) {
+        setState({...state, model: model});
+      } else {
+        setState({...state, model: model, cvCamera: React.createRef()});
+      }
+    } else if (!state.cvCamera) {
+      setState({...state, cvCamera: React.createRef()});
+    }
   }
 
   async function onFacesDetected(e) {
@@ -54,9 +67,6 @@ const Track: () => React$Node = () => {
         const {firstEyeData, secondEyeData} = face;
 
         if (firstEye && secondEye) {
-          // use the model to predict eye position
-          console.log('Eyes detected!');
-
           let first = tf.tensor(firstEyeData);
           let second = tf.tensor(secondEyeData);
 
@@ -67,13 +77,20 @@ const Track: () => React$Node = () => {
             const data = tf.concat([first, second], 1);
             const X = tf.reshape(data, [1, 95, 190, 4]);
 
-            console.log('Want to use model');
-            console.log(model);
-
             const prediction = await state.model.predict(X);
-            console.log(prediction.dataSync());
+            const predData = await prediction.data();
 
-            // do something
+            if (predData) {
+              var [x, y] = [predData[0], predData[1]];
+              if (x < 0) x = 0;
+              if (y < 0) y = 0;
+              if (x > width - POINTER_SIZE) x = width - POINTER_SIZE;
+              if (y > height - POINTER_SIZE) y = height - POINTER_SIZE;
+
+              console.log(`x: ${x}, y: ${y}`);
+
+              setState({...state, dot: [x, y]});
+            }
           }
         } else if (state.eyesDetected) {
           // ignore for now
@@ -85,15 +102,13 @@ const Track: () => React$Node = () => {
   }
 
   useEffect(() => {
-    const model = createModel();
-
-    console.log('Setting model to');
-    console.log(model);
-
-    if (!state.cvCamera) {
-      setState({...state, cvCamera: React.createRef(), model: model});
-    }
+    setup();
   });
+
+  const dotStyle = StyleSheet.flatten([
+    styles.dot,
+    {left: state.dot[0], top: state.dot[1]},
+  ]);
 
   return (
     <View style={styles.main}>
@@ -111,6 +126,7 @@ const Track: () => React$Node = () => {
         ) : (
           <View />
         )}
+        <View style={dotStyle} />
       </>
     </View>
   );
@@ -132,6 +148,15 @@ const styles = StyleSheet.create({
     right: 8,
     bottom: '80%',
     position: 'absolute',
+  },
+  dot: {
+    position: 'absolute',
+    margin: 0,
+    padding: 0,
+    width: POINTER_SIZE,
+    height: POINTER_SIZE,
+    borderRadius: POINTER_SIZE / 2,
+    backgroundColor: 'red',
   },
 });
 
