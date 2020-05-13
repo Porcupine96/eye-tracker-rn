@@ -4,7 +4,6 @@ import {
   View,
   StyleSheet,
   Text,
-  Button,
   TouchableOpacity,
   ImageBackground,
   Dimensions,
@@ -49,7 +48,6 @@ const emptyState = {
 var listenerAdded = false; // <3 Global variable
 
 const Training: () => React$Node = () => {
-  console.log('Rendering training');
   const {width, height} = Dimensions.get('window');
 
   const [state, setState] = useState(emptyState);
@@ -89,7 +87,6 @@ const Training: () => React$Node = () => {
   }, [state]);
 
   function onFacesDetected(e) {
-    // console.log('In onFacesDetected');
     var rawPayload = undefined;
 
     if (Platform.OS === 'ios') {
@@ -139,7 +136,6 @@ const Training: () => React$Node = () => {
   }
 
   const onButtonPress = position => async () => {
-    console.log('On Button press');
     const currentCount = state.buttonClicks[position] || 0;
     const newCount = currentCount + 1;
     const buttonClicks = {...state.buttonClicks, [position]: newCount};
@@ -309,9 +305,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'transparent',
     top: 0,
-    left: '50%',
+    left: '70%',
     right: 8,
-    bottom: '50%',
+    bottom: '70%',
     position: 'absolute',
   },
   roundButton: {
