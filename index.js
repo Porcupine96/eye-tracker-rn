@@ -2,8 +2,34 @@
  * @format
  */
 
-import {AppRegistry} from 'react-native';
-import App from './App';
-import {name as appName} from './app.json';
+import {Navigation} from 'react-native-navigation';
 
-AppRegistry.registerComponent(appName, () => App);
+import App from './App';
+import Training from './training.js';
+import Track from './track.js';
+
+Navigation.registerComponent('Menu', () => App);
+Navigation.registerComponent('Training', () => Training);
+Navigation.registerComponent('Track', () => Track);
+
+Navigation.events().registerAppLaunchedListener(() => {
+  Navigation.setDefaultOptions({
+    topBar: {
+      visible: false,
+    },
+  });
+
+  Navigation.setRoot({
+    root: {
+      stack: {
+        children: [
+          {
+            component: {
+              name: 'Track',
+            },
+          },
+        ],
+      },
+    },
+  });
+});

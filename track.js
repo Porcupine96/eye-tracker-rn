@@ -1,5 +1,12 @@
-import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, Text, Dimensions, Platform} from 'react-native';
+import React, {useEffect, useState, useRef} from 'react';
+import {
+  View,
+  StyleSheet,
+  Text,
+  Dimensions,
+  Platform,
+  Animated,
+} from 'react-native';
 import RNFS from 'react-native-fs';
 
 import * as tf from '@tensorflow/tfjs';
@@ -10,7 +17,9 @@ import {
 } from '@tensorflow/tfjs-react-native';
 
 import {CvCamera} from 'react-native-opencv3';
+import {randomNormal} from '@tensorflow/tfjs';
 
+const EYE_SIZE = 90;
 const POINTER_SIZE = 40;
 
 function emptyState(width, height) {
@@ -19,14 +28,25 @@ function emptyState(width, height) {
     eyesDetected: false,
     lastDetected: new Date(),
     model: undefined,
-    dot: [(width - POINTER_SIZE) / 2, (height - POINTER_SIZE) / 2],
+    // dot: [(width - POINTER_SIZE) / 2, (height - POINTER_SIZE) / 2],
+    // oldDot: [(width - POINTER_SIZE) / 2, (height - POINTER_SIZE) / 2],
+    dot: [0, 0],
+    oldDot: [0, 0],
   };
 }
 
 const Track: () => React$Node = () => {
+  const anim = useRef(new Animated.ValueXY()).current;
+
   const {width, height} = Dimensions.get('window');
 
   const [state, setState] = useState(emptyState(width, height));
+
+  console.log(`dot: ${state.dot}`);
+
+  Animated.spring(anim, {
+    toValue: {x: state.dot[0], y: state.dot[1]},
+  }).start();
 
   async function setup() {
     if (!state.model) {
@@ -66,34 +86,47 @@ const Track: () => React$Node = () => {
         const {firstEye, secondEye} = face;
         const {firstEyeData, secondEyeData} = face;
 
-        if (firstEye && secondEye) {
-          let first = tf.tensor(firstEyeData);
-          let second = tf.tensor(secondEyeData);
+        try {
+          if (firstEye && secondEye && firstEyeData && secondEyeData) {
+            let first = tf.tensor(firstEyeData);
+            let second = tf.tensor(secondEyeData);
 
-          if (first.shape[0] >= 95 && second.shape[0] >= 95) {
-            first = first.slice([0, 0, 0], [95, 95, 4]);
-            second = second.slice([0, 0, 0], [95, 95, 4]);
+            if (first.shape[0] >= EYE_SIZE && second.shape[0] >= EYE_SIZE) {
+              const data = tf.concat([first, second], 1);
+              const X = tf.reshape(data, [1, EYE_SIZE, 2 * EYE_SIZE, 4]);
 
-            const data = tf.concat([first, second], 1);
-            const X = tf.reshape(data, [1, 95, 190, 4]);
+              const prediction = await state.model.predict(X);
+              const predData = await prediction.data();
 
-            const prediction = await state.model.predict(X);
-            const predData = await prediction.data();
+              if (predData) {
+                var [x, y] = [predData[0], predData[1]];
 
-            if (predData) {
-              var [x, y] = [predData[0], predData[1]];
-              if (x < 0) x = 0;
-              if (y < 0) y = 0;
-              if (x > width - POINTER_SIZE) x = width - POINTER_SIZE;
-              if (y > height - POINTER_SIZE) y = height - POINTER_SIZE;
+                console.log(`x: ${x}, y: ${y}`);
 
-              console.log(`x: ${x}, y: ${y}`);
+                if (x < 0) x = 0;
+                if (y < 0) y = 0;
+                if (x > width - POINTER_SIZE) x = width - POINTER_SIZE;
+                if (y > height - POINTER_SIZE) y = height - POINTER_SIZE;
 
-              setState({...state, dot: [x, y]});
+                const a = Math.floor(Math.random() * 150 - 75);
+                const b = Math.floor(Math.random() * 180 - 90);
+
+                console.log(a);
+                console.log(b);
+
+                const currentDot = state.dot;
+
+                setState({...state, dot: [a, b], oldDot: currentDot});
+              }
             }
+          } else if (state.eyesDetected) {
+            // ignore for now
           }
-        } else if (state.eyesDetected) {
-          // ignore for now
+        } catch (e) {
+          console.log(first.shape);
+          console.log(second.shape);
+          console.log('=== ERROR ===');
+          console.log(e);
         }
       } else if (state.eyesDetected) {
         // ignore for now
@@ -107,7 +140,7 @@ const Track: () => React$Node = () => {
 
   const dotStyle = StyleSheet.flatten([
     styles.dot,
-    {left: state.dot[0], top: state.dot[1]},
+    // {left: state.dot[0], top: state.dot[1]},
   ]);
 
   return (
@@ -126,7 +159,12 @@ const Track: () => React$Node = () => {
         ) : (
           <View />
         )}
-        <View style={dotStyle} />
+        <Animated.View
+          style={{
+            transform: [{translateX: anim.x}, {translateY: anim.y}],
+          }}>
+          <View style={dotStyle} />
+        </Animated.View>
       </>
     </View>
   );
@@ -150,6 +188,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   dot: {
+    left: 0,
+    top: 0,
     position: 'absolute',
     margin: 0,
     padding: 0,

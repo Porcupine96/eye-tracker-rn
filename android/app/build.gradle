@@ -181,6 +181,7 @@ android {
 apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
 
 dependencies {
+    implementation project(':react-native-navigation')
     implementation 'androidx.appcompat:appcompat:1.0.1'
     addUnimodulesDependencies()
 

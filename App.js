@@ -1,53 +1,30 @@
 import React, {useState} from 'react';
-import {View, Button, StyleSheet} from 'react-native';
+import {View, Text, Button, StyleSheet} from 'react-native';
 import Training from './training.js';
 import Track from './track.js';
-import SanityCheck from './sanitycheck.js';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+import {Navigation} from 'react-native-navigation';
 
-const MENU = 0;
-const TRAINING_ROUTE = 1;
-const TRACK_ROUTE = 2;
-
-const emptyState = {
-  route: MENU,
-};
-
-const App: () => React$Node = () => {
-  const [state, setState] = useState(emptyState);
-
-  const goTo = route => () => {
-    setState({...state, route: route});
+const App = props => {
+  const goTo = name => () => {
+    Navigation.push(props.componentId, {
+      component: {
+        name,
+      },
+    });
   };
 
-  const renderMenu = () => {
-    return (
-      <>
-        <Button
-          title="Training"
-          style={styles.menuButton}
-          onPress={goTo(TRAINING_ROUTE)}
-        />
-        <Button
-          title="Track"
-          style={styles.menuButton}
-          onPress={goTo(TRACK_ROUTE)}
-        />
-      </>
-    );
-  };
-
-  const renderRoute = () => {
-    switch (state.route) {
-      case TRAINING_ROUTE:
-        return <Training />;
-      case TRACK_ROUTE:
-        return <Track />;
-      default:
-        return renderMenu();
-    }
-  };
-
-  return <View style={styles.main}>{renderRoute()}</View>;
+  return (
+    <View style={styles.main}>
+      <Button
+        title="Training"
+        style={styles.menuButton}
+        onPress={goTo('Training')}
+      />
+      <Button title="Track" style={styles.menuButton} onPress={goTo('Track')} />
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
